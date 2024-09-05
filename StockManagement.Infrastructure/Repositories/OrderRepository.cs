@@ -11,16 +11,16 @@ using StockManagement.Infrastructure.Data;
 
 namespace StockManagement.Infrastructure.Repositories
 {
-    public class CategoryRepository : ICategoryRepository
+    public class OrderRepository : IOrderRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryRepository(ApplicationDbContext context)
+        public OrderRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public IBaseRepositoryAsync<Category> Repository<T>() where T : BaseEntity
+        public IBaseRepositoryAsync<Order> Repository<T>() where T : BaseEntity
         {
             throw new NotImplementedException();
         }
