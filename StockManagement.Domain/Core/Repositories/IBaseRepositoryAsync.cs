@@ -9,10 +9,10 @@ namespace StockManagement.Domain.Core.Repositories
 {
     public interface IBaseRepositoryAsync<T> where T: BaseEntity
     {
-        Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-        Task DeleteAsync(Guid id);
+        Task DeleteAsync(int id);
     }
 }

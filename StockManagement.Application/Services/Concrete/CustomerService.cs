@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StockManagement.Application.Services.Abstract;
 using StockManagement.Domain.Entities;
-using StockManagement.Domain.Interfaces.Repositories;
+using StockManagement.Domain.Repositories;
 
 namespace StockManagement.Application.Services.Concrete
 {

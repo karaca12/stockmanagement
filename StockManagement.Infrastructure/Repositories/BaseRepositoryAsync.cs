@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using StockManagement.Domain.Core.Entities;
 using StockManagement.Domain.Core.Repositories;
 using StockManagement.Infrastructure.Data;
@@ -12,35 +13,49 @@ namespace StockManagement.Infrastructure.Repositories
     public class BaseRepositoryAsync<T> : IBaseRepositoryAsync<T> where T : BaseEntity
     {
         private readonly ApplicationDbContext _context;
+        private readonly DbSet<T> _dbSet;
 
         public BaseRepositoryAsync(ApplicationDbContext context)
         {
             _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public Task AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            entity.CreatedAt = DateTimeOffset.UtcNow;
+            entity.UpdatedAt = DateTimeOffset.UtcNow;
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                entity.IsDeleted = true;
+                entity.DeletedAt = DateTimeOffset.UtcNow;
+                _dbSet.Update(entity);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbSet.Where(e=>!e.IsDeleted).ToListAsync();
         }
 
-        public Task<T> GetByIdAsync(Guid id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
         }
 
-        public Task UpdateAsync(T entity)
+        public async Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            entity.UpdatedAt = DateTimeOffset.UtcNow;
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

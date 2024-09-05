@@ -9,8 +9,8 @@ namespace StockManagement.Domain.Entities
 {
     public class Order:BaseEntity
     {
-        public Guid ProductId { get; set; }
-        public Guid CustomerId { get; set; }
+        public int ProductId { get; set; }
+        public int CustomerId { get; set; }
         public int Pieces { get; set; }
         public decimal Price { get; set; }
         public Product Product { get; set; }

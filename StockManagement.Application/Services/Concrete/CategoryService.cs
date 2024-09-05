@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StockManagement.Application.Services.Abstract;
 using StockManagement.Domain.Entities;
-using StockManagement.Domain.Interfaces.Repositories;
+using StockManagement.Domain.Repositories;
 
 namespace StockManagement.Application.Services.Concrete
 {
@@ -20,27 +20,27 @@ namespace StockManagement.Application.Services.Concrete
 
         public Task AddAsync(Category category)
         {
-            throw new NotImplementedException();
+            return _categoryRepository.AddAsync(category);
         }
 
         public Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            return _categoryRepository.DeleteAsync(id);
         }
 
         public Task<IEnumerable<Category>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _categoryRepository.GetAllAsync();
         }
 
         public Task<Category> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return _categoryRepository.GetByIdAsync(id);
         }
 
         public Task UpdateAsync(Category category)
         {
-            throw new NotImplementedException();
+            return _categoryRepository.UpdateAsync(category);
         }
     }
 }
