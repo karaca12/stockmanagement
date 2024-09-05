@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using StockManagement.Application.DTOs.Requests;
+using StockManagement.Application.DTOs.Responses;
 using StockManagement.Application.Services.Abstract;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
@@ -18,29 +15,46 @@ namespace StockManagement.Application.Services.Concrete
             _categoryRepository = categoryRepository;
         }
 
-        public Task AddAsync(Category category)
+        public async Task AddAsync(CreateCategoryRequest request)
         {
-            return _categoryRepository.AddAsync(category);
+            var category = new Category
+            {
+                Name = request.Name
+            };
+            await _categoryRepository.AddAsync(category);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            return _categoryRepository.DeleteAsync(id);
+            await _categoryRepository.DeleteAsync(id);
         }
 
-        public Task<IEnumerable<Category>> GetAllAsync()
+        public async Task<bool> Exists(int id)
         {
-            return _categoryRepository.GetAllAsync();
+            return await _categoryRepository.Exists(id);
         }
 
-        public Task<Category> GetByIdAsync(int id)
+        public async Task<IEnumerable<GetAllCategoriesResponse>> GetAllAsync()
         {
-            return _categoryRepository.GetByIdAsync(id);
+            var categories = await _categoryRepository.GetAllAsync();
+            var response = categories.Select(c => new GetAllCategoriesResponse
+            {
+                Id = c.Id,
+                Name = c.Name
+            });
+            return response;
         }
 
-        public Task UpdateAsync(Category category)
+        public async Task<Category> GetByIdAsync(int id)
         {
-            return _categoryRepository.UpdateAsync(category);
+            return await _categoryRepository.GetByIdAsync(id);
+        }
+
+        public async Task UpdateAsync(EditCategoryRequest request)
+        {
+            var category = GetByIdAsync(request.Id).Result;
+            category.Name = request.Name;
+            await _categoryRepository.UpdateAsync(category);
         }
     }
 }

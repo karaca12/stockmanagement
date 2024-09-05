@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StockManagement.Domain.Core.Entities;
 using StockManagement.Domain.Core.Repositories;
 using StockManagement.Infrastructure.Data;
@@ -21,12 +16,13 @@ namespace StockManagement.Infrastructure.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             entity.CreatedAt = DateTimeOffset.UtcNow;
             entity.UpdatedAt = DateTimeOffset.UtcNow;
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task DeleteAsync(int id)
@@ -41,9 +37,14 @@ namespace StockManagement.Infrastructure.Repositories
             }
         }
 
+        public async Task<bool> Exists(int id)
+        {
+            return await _dbSet.AnyAsync(e => e.Id == id);
+        }
+
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.Where(e=>!e.IsDeleted).ToListAsync();
+            return await _dbSet.Where(e => !e.IsDeleted).ToListAsync();
         }
 
         public async Task<T> GetByIdAsync(int id)

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StockManagement.Domain.Core.Entities;
+﻿using StockManagement.Domain.Core.Entities;
 
 namespace StockManagement.Domain.Entities
 {
-    public class Order:BaseEntity
+    public class Order : BaseEntity
     {
         public int ProductId { get; set; }
         public int CustomerId { get; set; }

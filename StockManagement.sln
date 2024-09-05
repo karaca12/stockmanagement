@@ -7,11 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockManagement.Domain", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockManagement.Infrastructure", "StockManagement.Infrastructure\StockManagement.Infrastructure.csproj", "{7F55C975-4E64-4295-A750-70D5EC494CE3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockManagement.API", "StockManagement.API\StockManagement.API.csproj", "{8151BF9F-34F2-48DD-AAAF-AB075B92D395}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockManagement.Application", "StockManagement.Application\StockManagement.Application.csproj", "{399D93FB-ADA4-40B9-B604-15B0B554CE59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockManagement.Web", "StockManagement.Web\StockManagement.Web.csproj", "{669D68E4-6212-4332-A394-61BCFC64658D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockManagement.Web", "StockManagement.Web\StockManagement.Web.csproj", "{669D68E4-6212-4332-A394-61BCFC64658D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +25,6 @@ Global
 		{7F55C975-4E64-4295-A750-70D5EC494CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F55C975-4E64-4295-A750-70D5EC494CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F55C975-4E64-4295-A750-70D5EC494CE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8151BF9F-34F2-48DD-AAAF-AB075B92D395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8151BF9F-34F2-48DD-AAAF-AB075B92D395}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8151BF9F-34F2-48DD-AAAF-AB075B92D395}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8151BF9F-34F2-48DD-AAAF-AB075B92D395}.Release|Any CPU.Build.0 = Release|Any CPU
 		{399D93FB-ADA4-40B9-B604-15B0B554CE59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{399D93FB-ADA4-40B9-B604-15B0B554CE59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{399D93FB-ADA4-40B9-B604-15B0B554CE59}.Release|Any CPU.ActiveCfg = Release|Any CPU

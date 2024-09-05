@@ -1,7 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.Services.Concrete;
+using StockManagement.Domain.Repositories;
+using StockManagement.Infrastructure.Data;
+using StockManagement.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 var app = builder.Build();
 
