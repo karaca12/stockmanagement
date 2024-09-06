@@ -73,33 +73,40 @@
 @{
     var currentPage = ViewData["CurrentPage"] != null ? int.Parse(ViewData["CurrentPage"].ToString()) : 1;
     var totalPages = ViewData["TotalPages"] != null ? int.Parse(ViewData["TotalPages"].ToString()) : 1;
+    var pageSize = ViewData["CurrentPageSize"] != null ? int.Parse(ViewData["CurrentPageSize"].ToString()) : 10;
 }
 
 <div class="pagination-container">
-    <button type="button" class="prev-btn" @(currentPage == 1 ? "disabled" : "") onclick="location.href='?page=@(currentPage - 1)&pageSize=@ViewData["CurrentPageSize"]'">
+    <!-- Previous Button -->
+    <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize" class="prev-btn @(currentPage == 1 ? "disabled" : "")">
         Previous
-    </button>
+    </a>
 
+    <!-- Page Numbers -->
     <div class="page-numbers">
         @if (totalPages > 1)
         {
-            <a href="?page=1&pageSize=@ViewData["CurrentPageSize"]" class="@(currentPage == 1 ? "active" : "")">1</a>
+            <!-- First Page -->
+            <a asp-action="Index" asp-route-page="1" asp-route-pageSize="@pageSize" class="@(currentPage == 1 ? "active" : "")">1</a>
 
             @if (currentPage > 4)
             {
                 <span>...</span>
             }
 
+            <!-- Previous 2 Pages -->
             @for (var i = Math.Max(2, currentPage - 2); i < currentPage; i++)
             {
-                <a href="?page=@i&pageSize=@ViewData["CurrentPageSize"]">@i</a>
+                <a asp-action="Index" asp-route-page="@i" asp-route-pageSize="@pageSize">@i</a>
             }
 
-            <a href="#" class="active">@currentPage</a>
+            <!-- Current Page -->
+            <a asp-action="Index" asp-route-page="@currentPage" asp-route-pageSize="@pageSize" class="active">@currentPage</a>
 
+            <!-- Next 2 Pages -->
             @for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
             {
-                <a href="?page=@i&pageSize=@ViewData["CurrentPageSize"]">@i</a>
+                <a asp-action="Index" asp-route-page="@i" asp-route-pageSize="@pageSize">@i</a>
             }
 
             @if (currentPage < totalPages - 3)
@@ -107,11 +114,13 @@
                 <span>...</span>
             }
 
-            <a href="?page=@totalPages&pageSize=@ViewData["CurrentPageSize"]" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
+            <!-- Last Page -->
+            <a asp-action="Index" asp-route-page="@totalPages" asp-route-pageSize="@pageSize" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
         }
     </div>
 
-    <button type="button" class="next-btn" @(currentPage == totalPages ? "disabled" : "") onclick="location.href='?page=@(currentPage + 1)&pageSize=@ViewData["CurrentPageSize"]'">
+    <!-- Next Button -->
+    <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize" class="next-btn @(currentPage == totalPages ? "disabled" : "")">
         Next
-    </button>
+    </a>
 </div>
