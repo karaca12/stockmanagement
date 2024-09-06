@@ -1,6 +1,7 @@
 ﻿using StockManagement.Application.DTOs.Requests;
 using StockManagement.Application.DTOs.Responses;
 using StockManagement.Application.Services.Abstract;
+using StockManagement.Domain.Core.Paging;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
 
@@ -45,6 +46,24 @@ namespace StockManagement.Application.Services.Concrete
                 Surname = c.Surname
             });
             return response;
+        }
+
+        public async Task<PagedList<GetAllCustomersResponse>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString = null)
+        {
+            var customers = await _customerRepository.GetAllAsync();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                customers = customers.Where(c => c.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                || c.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var response = customers.Select(c => new GetAllCustomersResponse
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Surname = c.Surname
+            }).ToList();
+            return PagedList<GetAllCustomersResponse>.Create(response,pageNumber,pageSize);
         }
 
         public async Task<GetCustomerByIdResponse> GetByIdAsync(int id)

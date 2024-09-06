@@ -15,9 +15,12 @@ namespace StockManagement.Web.Controllers
             _customerService = customerService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString,int pageNumber=1,int pageSize = 10)
         {
-            return View(await _customerService.GetAllAsync());
+            var pagedCustomers = await _customerService.GetAllPagedAsync( pageNumber, pageSize, searchString);
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentPageSize"] = pageSize;
+            return View(pagedCustomers);
         }
 
         public IActionResult Create()

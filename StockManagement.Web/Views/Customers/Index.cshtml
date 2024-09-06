@@ -1,10 +1,34 @@
-﻿@model IEnumerable<StockManagement.Application.DTOs.Responses.GetAllCustomersResponse>
+﻿@using StockManagement.Domain.Core.Paging
+@model PagedList<StockManagement.Application.DTOs.Responses.GetAllCustomersResponse>
 
 @{
 	ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+
+<form asp-action="Index" method="get">
+	<input type="text" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Search by Name or Surname"/>
+	@{
+		var pageSizes = new List<int> { 10, 20, 50 };
+		var currentPageSize = ViewData["CurrentPageSize"] != null ? int.Parse(ViewData["CurrentPageSize"].ToString()) : 10;
+	}
+	<select name="pageSize" onchange="this.form.submit()">
+		@foreach(var pageSize in pageSizes)
+		{
+			if (pageSize == currentPageSize)
+			{
+				<option value="@pageSize" selected="selected">@pageSize</option>
+			}
+			else
+			{
+				<option value="@pageSize">@pageSize</option>
+			}
+		}
+
+	</select>
+	<input type="submit" value="Search" class="btn btn-primary"/>
+</form>
 
 <p>
 	<a asp-action="Create">Create New</a>
@@ -13,19 +37,19 @@
 	<thead>
 		<tr>
 			<th>
-				@Html.DisplayNameFor(model => model.Id)
+				Id
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Name)
+				Name
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Surname)
+				Surname
 			</th>
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var item in Model)
+		@foreach (var item in Model.Items)
 		{
 			<tr>
 				<td>
@@ -45,3 +69,25 @@
 		}
 	</tbody>
 </table>
+
+<div class="pagination">
+	@if (Model.HasPreviousPage)
+	{
+		<a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" 
+		asp-route-pageSize="@ViewData["CurrentPageSize"]" 
+		asp-route-searchString="@ViewData["CurrentFilter"]">Previous</a>
+	}
+	@for (var i = 1; i <= Model.TotalPages; i++)
+	{
+		<a asp-action="Index" asp-route-pageNumber="@i"
+		   asp-route-pageSize="@ViewData["CurrentPageSize"]"
+		   asp-route-searchString="@ViewData["CurrentFilter"]"
+			class="@(Model.PageNumber==i?"selected":"")">@i</a>
+	}
+	@if (Model.HasNextPage)
+	{
+		<a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)"
+		   asp-route-pageSize="@ViewData["CurrentPageSize"]"
+		   asp-route-searchString="@ViewData["CurrentFilter"]">Next</a>
+	}
+</div>

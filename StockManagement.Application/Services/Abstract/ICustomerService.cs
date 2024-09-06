@@ -1,5 +1,6 @@
 ﻿using StockManagement.Application.DTOs.Requests;
 using StockManagement.Application.DTOs.Responses;
+using StockManagement.Domain.Core.Paging;
 
 namespace StockManagement.Application.Services.Abstract
 {
@@ -11,5 +12,6 @@ namespace StockManagement.Application.Services.Abstract
         Task UpdateAsync(EditCustomerRequest request);
         Task DeleteAsync(int id);
         Task<bool> Exists(int id);
+        Task<PagedList<GetAllCustomersResponse>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString);
     }
 }
