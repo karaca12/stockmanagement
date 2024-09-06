@@ -2,92 +2,116 @@
 @model PagedList<StockManagement.Application.DTOs.Responses.GetAllCustomersResponse>
 
 @{
-	ViewData["Title"] = "Index";
+    ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
 
 <form asp-action="Index" method="get">
-	<input type="text" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Search by Name or Surname"/>
-	@{
-		var pageSizes = new List<int> { 10, 20, 50 };
-		var currentPageSize = ViewData["CurrentPageSize"] != null ? int.Parse(ViewData["CurrentPageSize"].ToString()) : 10;
-	}
-	<select name="pageSize" onchange="this.form.submit()">
-		@foreach(var pageSize in pageSizes)
-		{
-			if (pageSize == currentPageSize)
-			{
-				<option value="@pageSize" selected="selected">@pageSize</option>
-			}
-			else
-			{
-				<option value="@pageSize">@pageSize</option>
-			}
-		}
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Search by Name or Surname" />
+    @{
+        var pageSizes = new List<int> { 10, 20, 50 };
+        var currentPageSize = ViewData["CurrentPageSize"] != null ? int.Parse(ViewData["CurrentPageSize"].ToString()) : 10;
+    }
+    <select name="pageSize" onchange="this.form.submit()">
+        @foreach (var pageSize in pageSizes)
+        {
+            if (pageSize == currentPageSize)
+            {
+                <option value="@pageSize" selected="selected">@pageSize</option>
+            }
+            else
+            {
+                <option value="@pageSize">@pageSize</option>
+            }
+        }
 
-	</select>
-	<input type="submit" value="Search" class="btn btn-primary"/>
+    </select>
+    <input type="submit" value="Search" class="btn btn-primary" />
 </form>
 
 <p>
-	<a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-	<thead>
-		<tr>
-			<th>
-				Id
-			</th>
-			<th>
-				Name
-			</th>
-			<th>
-				Surname
-			</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var item in Model.Items)
-		{
-			<tr>
-				<td>
-					@Html.DisplayFor(modelItem => item.Id)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Name)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Surname)
-				</td>
-				<td>
-					<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-					<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-				</td>
-			</tr>
-		}
-	</tbody>
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Surname
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Surname)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
 
-<div class="pagination">
-	@if (Model.HasPreviousPage)
-	{
-		<a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" 
-		asp-route-pageSize="@ViewData["CurrentPageSize"]" 
-		asp-route-searchString="@ViewData["CurrentFilter"]">Previous</a>
-	}
-	@for (var i = 1; i <= Model.TotalPages; i++)
-	{
-		<a asp-action="Index" asp-route-pageNumber="@i"
-		   asp-route-pageSize="@ViewData["CurrentPageSize"]"
-		   asp-route-searchString="@ViewData["CurrentFilter"]"
-			class="@(Model.PageNumber==i?"selected":"")">@i</a>
-	}
-	@if (Model.HasNextPage)
-	{
-		<a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)"
-		   asp-route-pageSize="@ViewData["CurrentPageSize"]"
-		   asp-route-searchString="@ViewData["CurrentFilter"]">Next</a>
-	}
+@{
+    var currentPage = ViewData["CurrentPage"] != null ? int.Parse(ViewData["CurrentPage"].ToString()) : 1;
+    var totalPages = ViewData["TotalPages"] != null ? int.Parse(ViewData["TotalPages"].ToString()) : 1;
+}
+
+<div class="pagination-container">
+    <button type="button" class="prev-btn" @(currentPage == 1 ? "disabled" : "") onclick="location.href='?page=@(currentPage - 1)&pageSize=@ViewData["CurrentPageSize"]'">
+        Previous
+    </button>
+
+    <div class="page-numbers">
+        @if (totalPages > 1)
+        {
+            <a href="?page=1&pageSize=@ViewData["CurrentPageSize"]" class="@(currentPage == 1 ? "active" : "")">1</a>
+
+            @if (currentPage > 4)
+            {
+                <span>...</span>
+            }
+
+            @for (var i = Math.Max(2, currentPage - 2); i < currentPage; i++)
+            {
+                <a href="?page=@i&pageSize=@ViewData["CurrentPageSize"]">@i</a>
+            }
+
+            <a href="#" class="active">@currentPage</a>
+
+            @for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
+            {
+                <a href="?page=@i&pageSize=@ViewData["CurrentPageSize"]">@i</a>
+            }
+
+            @if (currentPage < totalPages - 3)
+            {
+                <span>...</span>
+            }
+
+            <a href="?page=@totalPages&pageSize=@ViewData["CurrentPageSize"]" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
+        }
+    </div>
+
+    <button type="button" class="next-btn" @(currentPage == totalPages ? "disabled" : "") onclick="location.href='?page=@(currentPage + 1)&pageSize=@ViewData["CurrentPageSize"]'">
+        Next
+    </button>
 </div>
