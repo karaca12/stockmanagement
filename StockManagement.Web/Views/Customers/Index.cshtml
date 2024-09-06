@@ -14,15 +14,15 @@
         var currentPageSize = ViewData["CurrentPageSize"] != null ? int.Parse(ViewData["CurrentPageSize"].ToString()) : 10;
     }
     <select name="pageSize" onchange="this.form.submit()">
-        @foreach (var pageSize in pageSizes)
+        @foreach (var size in pageSizes)
         {
-            if (pageSize == currentPageSize)
+            if (size == currentPageSize)
             {
-                <option value="@pageSize" selected="selected">@pageSize</option>
+                <option value="@size" selected="selected">@size</option>
             }
             else
             {
-                <option value="@pageSize">@pageSize</option>
+                <option value="@size">@size</option>
             }
         }
 
@@ -71,14 +71,14 @@
 </table>
 
 @{
-    var currentPage = ViewData["CurrentPage"] != null ? int.Parse(ViewData["CurrentPage"].ToString()) : 1;
-    var totalPages = ViewData["TotalPages"] != null ? int.Parse(ViewData["TotalPages"].ToString()) : 1;
-    var pageSize = ViewData["CurrentPageSize"] != null ? int.Parse(ViewData["CurrentPageSize"].ToString()) : 10;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+    var pageSize = Model.PageSize;
 }
 
 <div class="pagination-container">
     <!-- Previous Button -->
-    <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize" class="prev-btn @(currentPage == 1 ? "disabled" : "")">
+    <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize" class="prev-btn @(Model.HasPreviousPage ? "" : "disabled")">
         Previous
     </a>
 
@@ -101,7 +101,10 @@
             }
 
             <!-- Current Page -->
-            <a asp-action="Index" asp-route-page="@currentPage" asp-route-pageSize="@pageSize" class="active">@currentPage</a>
+            @if (currentPage > 1 && currentPage < totalPages)
+            {
+                <a asp-action="Index" asp-route-page="@currentPage" asp-route-pageSize="@pageSize" class="active">@currentPage</a>
+            }
 
             <!-- Next 2 Pages -->
             @for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
@@ -120,7 +123,7 @@
     </div>
 
     <!-- Next Button -->
-    <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize" class="next-btn @(currentPage == totalPages ? "disabled" : "")">
+    <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize" class="next-btn @(Model.HasNextPage ? "" : "disabled")">
         Next
     </a>
 </div>
