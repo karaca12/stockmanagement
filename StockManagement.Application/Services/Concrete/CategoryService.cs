@@ -45,14 +45,20 @@ namespace StockManagement.Application.Services.Concrete
             return response;
         }
 
-        public async Task<Category> GetByIdAsync(int id)
+        public async Task<GetCategoryByIdResponse> GetByIdAsync(int id)
         {
-            return await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id);
+            var response = new GetCategoryByIdResponse
+            {
+                Id = category.Id,
+                Name = category.Name
+            };
+            return response;
         }
 
         public async Task UpdateAsync(EditCategoryRequest request)
         {
-            var category = GetByIdAsync(request.Id).Result;
+            var category = _categoryRepository.GetByIdAsync(request.Id).Result;
             category.Name = request.Name;
             await _categoryRepository.UpdateAsync(category);
         }

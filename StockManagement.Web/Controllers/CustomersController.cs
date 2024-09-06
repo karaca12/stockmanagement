@@ -6,21 +6,19 @@ using StockManagement.Application.Services.Abstract;
 
 namespace StockManagement.Web.Controllers
 {
-    public class CategoriesController : Controller
+    public class CustomersController : Controller
     {
-        private readonly ICategoryService _categoryService;
+        private readonly ICustomerService _customerService;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CustomersController(ICustomerService customerService)
         {
-            _categoryService = categoryService;
+            _customerService = customerService;
         }
-
 
         public async Task<IActionResult> Index()
         {
-            return View(await _categoryService.GetAllAsync());
+            return View(await _customerService.GetAllAsync());
         }
-
 
         public IActionResult Create()
         {
@@ -29,11 +27,11 @@ namespace StockManagement.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryRequest request)
+        public async Task<IActionResult> Create(CreateCustomerRequest request)
         {
             if (ModelState.IsValid)
             {
-                await _categoryService.AddAsync(request);
+                await _customerService.AddAsync(request);
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -46,22 +44,23 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryService.GetByIdAsync((int)id);
-            if (category == null)
+            var customer = await _customerService.GetByIdAsync((int)id);
+            if (customer == null)
             {
                 return NotFound();
             }
-            var editRequest = new EditCategoryRequest
+            var editRequest = new EditCustomerRequest
             {
-                Id = category.Id,
-                Name = category.Name
+                Id = customer.Id,
+                Name = customer.Name,
+                Surname = customer.Surname
             };
             return View(editRequest);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditCategoryRequest request)
+        public async Task<IActionResult> Edit(int id, EditCustomerRequest request)
         {
             if (id != request.Id)
             {
@@ -72,11 +71,11 @@ namespace StockManagement.Web.Controllers
             {
                 try
                 {
-                    await _categoryService.UpdateAsync(request);
+                    await _customerService.UpdateAsync(request);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _categoryService.Exists(request.Id))
+                    if (!await _customerService.Exists(request.Id))
                     {
                         return NotFound();
                     }
@@ -97,18 +96,19 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryService.GetByIdAsync((int)id);
-            if (category == null)
+            var customer = await _customerService.GetByIdAsync((int)id);
+            if (customer == null)
             {
                 return NotFound();
             }
-            var deleteResponse = new DeleteCategoryResponse
+            var deletedResponse = new DeleteCustomerResponse
             {
-                Id = category.Id,
-                Name = category.Name
+                Id = customer.Id,
+                Name = customer.Name,
+                Surname = customer.Surname
             };
 
-            return View(deleteResponse);
+            return View(deletedResponse);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -120,9 +120,7 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            await _categoryService.DeleteAsync((int)id);
-
-
+            await _customerService.DeleteAsync((int)id);
             return RedirectToAction(nameof(Index));
         }
     }

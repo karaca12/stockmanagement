@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.Application.DTOs.Requests;
 using StockManagement.Application.DTOs.Responses;
@@ -6,34 +7,35 @@ using StockManagement.Application.Services.Abstract;
 
 namespace StockManagement.Web.Controllers
 {
-    public class CategoriesController : Controller
+    public class OrdersController : Controller
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IOrderService _orderService;
 
-        public CategoriesController(ICategoryService categoryService)
+        public OrdersController(IOrderService orderService)
         {
-            _categoryService = categoryService;
+            _orderService = orderService;
         }
-
 
         public async Task<IActionResult> Index()
         {
-            return View(await _categoryService.GetAllAsync());
+            return View(await _orderService.GetAllWithCustomerAndProductAsync());
         }
 
-
+        // GET: Orders/Create
         public IActionResult Create()
         {
+            ViewData["CustomerId"] = new SelectList(_orderService.GetAllCustomersAsync().Result, "Id", "Name");
+            ViewData["ProductId"] = new SelectList(_orderService.GetAllProductsAsync().Result, "Id", "Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryRequest request)
+        public async Task<IActionResult> Create(CreateOrderRequest request)
         {
             if (ModelState.IsValid)
             {
-                await _categoryService.AddAsync(request);
+                await _orderService.AddAsync(request);
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -46,22 +48,28 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryService.GetByIdAsync((int)id);
-            if (category == null)
+            var order = await _orderService.GetByIdWithCustomerAndProductAsync((int)id);
+            if (order == null)
             {
                 return NotFound();
             }
-            var editRequest = new EditCategoryRequest
+            var editRequest = new EditOrderRequest
             {
-                Id = category.Id,
-                Name = category.Name
+                Id = order.Id,
+                ProductId = order.ProductId,
+                CustomerId = order.CustomerId,
+                Pieces = order.Pieces,
+                Price = order.Price
             };
+
+            ViewData["CustomerId"] = new SelectList(_orderService.GetAllCustomersAsync().Result, "Id", "Name", order.CustomerId);
+            ViewData["ProductId"] = new SelectList(_orderService.GetAllProductsAsync().Result, "Id", "Name", order.ProductId);
             return View(editRequest);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditCategoryRequest request)
+        public async Task<IActionResult> Edit(int id, EditOrderRequest request)
         {
             if (id != request.Id)
             {
@@ -72,11 +80,11 @@ namespace StockManagement.Web.Controllers
             {
                 try
                 {
-                    await _categoryService.UpdateAsync(request);
+                    await _orderService.UpdateAsync(request);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _categoryService.Exists(request.Id))
+                    if (!await _orderService.Exists(request.Id))
                     {
                         return NotFound();
                     }
@@ -97,15 +105,18 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryService.GetByIdAsync((int)id);
-            if (category == null)
+            var order = await _orderService.GetByIdWithCustomerAndProductAsync((int)id);
+            if (order == null)
             {
                 return NotFound();
             }
-            var deleteResponse = new DeleteCategoryResponse
+            var deleteResponse = new DeleteOrderResponse
             {
-                Id = category.Id,
-                Name = category.Name
+                Id = order.Id,
+                Product = order.ProductName,
+                Customer = order.CustomerName,
+                Pieces = order.Pieces,
+                Price = order.Price
             };
 
             return View(deleteResponse);
@@ -120,9 +131,7 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            await _categoryService.DeleteAsync((int)id);
-
-
+            await _orderService.DeleteAsync((int)id);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,4 +1,6 @@
-﻿using StockManagement.Application.Services.Abstract;
+﻿using StockManagement.Application.DTOs.Requests;
+using StockManagement.Application.DTOs.Responses;
+using StockManagement.Application.Services.Abstract;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
 
@@ -13,29 +15,56 @@ namespace StockManagement.Application.Services.Concrete
             _customerRepository = customerRepository;
         }
 
-        public Task AddAsync(Customer customer)
+        public async Task AddAsync(CreateCustomerRequest request)
         {
-            throw new NotImplementedException();
+            var customer = new Customer
+            {
+                Name = request.Name,
+                Surname = request.Surname
+            };
+            await _customerRepository.AddAsync(customer);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            await _customerRepository.DeleteAsync(id);
         }
 
-        public Task<IEnumerable<Customer>> GetAllAsync()
+        public async Task<bool> Exists(int id)
         {
-            throw new NotImplementedException();
+            return await _customerRepository.Exists(id);
         }
 
-        public Task<Customer> GetByIdAsync(int id)
+        public async Task<IEnumerable<GetAllCustomersResponse>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var customers = await _customerRepository.GetAllAsync();
+            var response = customers.Select(c => new GetAllCustomersResponse
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Surname = c.Surname
+            });
+            return response;
         }
 
-        public Task UpdateAsync(Customer customer)
+        public async Task<GetCustomerByIdResponse> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var customer = await _customerRepository.GetByIdAsync(id);
+            var response = new GetCustomerByIdResponse
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Surname = customer.Surname
+            };
+            return response;
+        }
+
+        public async Task UpdateAsync(EditCustomerRequest request)
+        {
+            var customer = _customerRepository.GetByIdAsync(request.Id).Result;
+            customer.Name = request.Name;
+            customer.Surname = request.Surname;
+            await _customerRepository.UpdateAsync(customer);
         }
     }
 }

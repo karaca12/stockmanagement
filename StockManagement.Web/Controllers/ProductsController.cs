@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.Application.DTOs.Requests;
 using StockManagement.Application.DTOs.Responses;
@@ -6,34 +7,33 @@ using StockManagement.Application.Services.Abstract;
 
 namespace StockManagement.Web.Controllers
 {
-    public class CategoriesController : Controller
+    public class ProductsController : Controller
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
 
-        public CategoriesController(ICategoryService categoryService)
+        public ProductsController(IProductService productService)
         {
-            _categoryService = categoryService;
+            _productService = productService;
         }
-
 
         public async Task<IActionResult> Index()
         {
-            return View(await _categoryService.GetAllAsync());
+            return View(await _productService.GetAllWithCategoryAsync());
         }
-
 
         public IActionResult Create()
         {
+            ViewData["CategoryId"] = new SelectList(_productService.GetAllCategoriesAsync().Result, "Id", "Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryRequest request)
+        public async Task<IActionResult> Create(CreateProductRequest request)
         {
             if (ModelState.IsValid)
             {
-                await _categoryService.AddAsync(request);
+                await _productService.AddAsync(request);
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -46,22 +46,27 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryService.GetByIdAsync((int)id);
-            if (category == null)
+            var product = await _productService.GetByIdWithCategoryAsync((int)id);
+            if (product == null)
             {
                 return NotFound();
             }
-            var editRequest = new EditCategoryRequest
+            var editRequest = new EditProductRequest
             {
-                Id = category.Id,
-                Name = category.Name
+                Id = product.Id,
+                Name = product.Name,
+                Brand = product.Brand,
+                CategoryId = product.CategoryId,
+                Price = product.Price,
+                Stock = product.Stock
             };
+            ViewData["CategoryId"] = new SelectList(_productService.GetAllCategoriesAsync().Result, "Id", "Name", product.CategoryId);
             return View(editRequest);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditCategoryRequest request)
+        public async Task<IActionResult> Edit(int id, EditProductRequest request)
         {
             if (id != request.Id)
             {
@@ -72,11 +77,11 @@ namespace StockManagement.Web.Controllers
             {
                 try
                 {
-                    await _categoryService.UpdateAsync(request);
+                    await _productService.UpdateAsync(request);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _categoryService.Exists(request.Id))
+                    if (!await _productService.Exists(request.Id))
                     {
                         return NotFound();
                     }
@@ -97,17 +102,20 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryService.GetByIdAsync((int)id);
-            if (category == null)
+            var product = await _productService.GetByIdWithCategoryAsync((int)id);
+            if (product == null)
             {
                 return NotFound();
             }
-            var deleteResponse = new DeleteCategoryResponse
+            var deleteResponse = new DeleteProductResponse
             {
-                Id = category.Id,
-                Name = category.Name
+                Id = product.Id,
+                Name = product.Name,
+                Brand = product.Brand,
+                Category = product.CategoryName,
+                Price = product.Price,
+                Stock = product.Stock
             };
-
             return View(deleteResponse);
         }
 
@@ -120,9 +128,7 @@ namespace StockManagement.Web.Controllers
                 return NotFound();
             }
 
-            await _categoryService.DeleteAsync((int)id);
-
-
+            await _productService.DeleteAsync((int)id);
             return RedirectToAction(nameof(Index));
         }
     }
