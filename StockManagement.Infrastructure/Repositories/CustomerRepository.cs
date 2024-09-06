@@ -4,13 +4,13 @@ using StockManagement.Infrastructure.Data;
 
 namespace StockManagement.Infrastructure.Repositories
 {
-    public class CustomerRepository : BaseRepositoryAsync<Customer>, ICustomerRepository
-    {
-        private readonly ApplicationDbContext _context;
+	public class CustomerRepository : BaseRepositoryAsync<Customer>, ICustomerRepository
+	{
+		private readonly ApplicationDbContext _context;
 
-        public CustomerRepository(ApplicationDbContext context) : base(context)
-        {
-            _context = context;
-        }
-    }
+		public CustomerRepository(ApplicationDbContext context) : base(context)
+		{
+			_context = context;
+		}
+	}
 }

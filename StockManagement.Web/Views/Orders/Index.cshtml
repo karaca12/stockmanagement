@@ -1,10 +1,34 @@
-﻿@model IEnumerable<StockManagement.Application.DTOs.Responses.GetAllOrdersWithCustomerAndProductResponse>
+﻿@using StockManagement.Domain.Core.Paging
+@model PagedList<StockManagement.Application.DTOs.Responses.GetAllOrdersWithCustomerAndProductResponse>
 
 @{
 	ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+
+<form asp-action="Index" method="get">
+	<input type="text" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Search by Name or Surname" />
+	@{
+		var pageSizes = new List<int> { 10, 20, 50 };
+		var currentPageSize = Model.PageSize > 0 ? int.Parse(Model.PageSize.ToString()) : 10;
+	}
+	<select name="pageSize" onchange="this.form.submit()">
+		@foreach (var size in pageSizes)
+		{
+			if (size == currentPageSize)
+			{
+				<option value="@size" selected="selected">@size</option>
+			}
+			else
+			{
+				<option value="@size">@size</option>
+			}
+		}
+
+	</select>
+	<input type="submit" value="Search" class="btn btn-primary" />
+</form>
 
 <p>
 	<a asp-action="Create">Create New</a>
@@ -13,26 +37,26 @@
 	<thead>
 		<tr>
 			<th>
-				@Html.DisplayNameFor(model => model.Id)
+				Id
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Pieces)
+				Pieces
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Price)
+				Price
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Product)
+				Product
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Customer)
+				Customer
 			</th>
 
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var item in Model)
+		@foreach (var item in Model.Items)
 		{
 			<tr>
 				<td>
@@ -59,3 +83,53 @@
 		}
 	</tbody>
 </table>
+
+@{
+	var currentPage = Model.PageNumber;
+	var totalPages = Model.TotalPages;
+	var pageSize = Model.PageSize;
+}
+
+<div class="pagination-container">
+	<a asp-action="Index" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize" class="prev-btn @(Model.HasPreviousPage ? "" : "disabled")">
+		Previous
+	</a>
+
+	<div class="page-numbers">
+		@if (totalPages > 1)
+		{
+			<a asp-action="Index" asp-route-pageNumber="1" asp-route-pageSize="@pageSize" class="@(currentPage == 1 ? "active" : "")">1</a>
+
+			@if (currentPage > 4)
+			{
+				<span>...</span>
+			}
+
+			@for (var i = Math.Max(2, currentPage - 2); i < currentPage; i++)
+			{
+				<a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize">@i</a>
+			}
+
+			@if (currentPage > 1 && currentPage < totalPages)
+			{
+				<a asp-action="Index" asp-route-pageNumber="@currentPage" asp-route-pageSize="@pageSize" class="active">@currentPage</a>
+			}
+
+			@for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
+			{
+				<a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize">@i</a>
+			}
+
+			@if (currentPage < totalPages - 3)
+			{
+				<span>...</span>
+			}
+
+			<a asp-action="Index" asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
+		}
+	</div>
+
+	<a asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" class="next-btn @(Model.HasNextPage ? "" : "disabled")">
+		Next
+	</a>
+</div>
