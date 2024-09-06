@@ -133,7 +133,7 @@
 		}
 	</div>
 
-	<a asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" class="next-btn @(Model.HasNextPage ? "" : "disabled")">
+	<a asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" class="next-btn @(Model.HasNextPage ? "" : "disabled")" >
 		Next
 	</a>
 </div>
