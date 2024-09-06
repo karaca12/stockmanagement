@@ -19,7 +19,6 @@ namespace StockManagement.Web.Controllers
         {
             var pagedCustomers = await _customerService.GetAllPagedAsync( pageNumber, pageSize, searchString);
             ViewData["CurrentFilter"] = searchString;
-            ViewData["CurrentPageSize"] = pageSize;
             return View(pagedCustomers);
         }
 
