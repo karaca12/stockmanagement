@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.Application.Services.Abstract;
 using StockManagement.Application.ViewModels.Requests;
@@ -6,6 +7,7 @@ using StockManagement.Application.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
+	[Authorize]
 	public class CustomersController : Controller
 	{
 		private readonly ICustomerService _customerService;

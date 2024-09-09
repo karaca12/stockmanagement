@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.Application.Services.Abstract;
@@ -7,7 +8,8 @@ using StockManagement.Application.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
-	public class OrdersController : Controller
+    [Authorize]
+    public class OrdersController : Controller
 	{
 		private readonly IOrderService _orderService;
 

@@ -10,9 +10,4 @@
     <ProjectReference Include="..\StockManagement.Domain\StockManagement.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Requests\" />
-    <Folder Include="DTOs\Responses\" />
-  </ItemGroup>
-
 </Project>

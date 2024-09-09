@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.Application.Services.Abstract;
 using StockManagement.Application.ViewModels.Requests;
@@ -6,7 +7,8 @@ using StockManagement.Application.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
-	public class CategoriesController : Controller
+    [Authorize]
+    public class CategoriesController : Controller
 	{
 		private readonly ICategoryService _categoryService;
 
