@@ -1,9 +1,9 @@
 ﻿using StockManagement.Application.Services.Abstract;
-using StockManagement.Application.ViewModels.Requests;
-using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
+using StockManagement.Domain.ViewModels.Requests;
+using StockManagement.Domain.ViewModels.Responses;
 
 namespace StockManagement.Application.Services.Concrete
 {

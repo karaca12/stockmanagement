@@ -1,13 +1,20 @@
-﻿namespace StockManagement.Application.ViewModels.Responses
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace StockManagement.Domain.ViewModels.Requests
 {
-	public class GetProductByIdWithCategoryViewModel
+	public class EditProductViewModel
 	{
+		[Required]
 		public int Id { get; set; }
+		[Required]
 		public string Name { get; set; }
+		[Required]
 		public string Brand { get; set; }
+		[Required]
 		public int CategoryId { get; set; }
-		public string CategoryName { get; set; }
+		[Required]
 		public decimal Price { get; set; }
+		[Required]
 		public int Stock { get; set; }
 	}
 }

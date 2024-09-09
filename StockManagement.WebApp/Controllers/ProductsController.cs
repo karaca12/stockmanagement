@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.Application.Services.Abstract;
-using StockManagement.Application.ViewModels.Requests;
-using StockManagement.Application.ViewModels.Responses;
+using StockManagement.Domain.ViewModels.Requests;
+using StockManagement.Domain.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
-    [Authorize]
-    public class ProductsController : Controller
+	[Authorize]
+	public class ProductsController : Controller
 	{
 		private readonly IProductService _productService;
 

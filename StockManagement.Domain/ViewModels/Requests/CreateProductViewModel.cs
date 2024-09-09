@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StockManagement.Application.ViewModels.Requests
+namespace StockManagement.Domain.ViewModels.Requests
 {
-	public class EditProductViewModel
+	public class CreateProductViewModel
 	{
-		[Required]
-		public int Id { get; set; }
 		[Required]
 		public string Name { get; set; }
 		[Required]

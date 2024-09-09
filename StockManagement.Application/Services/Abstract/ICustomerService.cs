@@ -1,6 +1,6 @@
-﻿using StockManagement.Application.ViewModels.Requests;
-using StockManagement.Application.ViewModels.Responses;
-using StockManagement.Domain.Core.Paging;
+﻿using StockManagement.Domain.Core.Paging;
+using StockManagement.Domain.ViewModels.Requests;
+using StockManagement.Domain.ViewModels.Responses;
 
 namespace StockManagement.Application.Services.Abstract
 {

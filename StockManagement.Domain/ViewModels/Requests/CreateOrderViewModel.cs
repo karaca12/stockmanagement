@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StockManagement.Application.ViewModels.Requests
+namespace StockManagement.Domain.ViewModels.Requests
 {
 	public class CreateOrderViewModel
 	{
