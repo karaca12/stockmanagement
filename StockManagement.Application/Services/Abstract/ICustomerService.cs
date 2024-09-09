@@ -1,17 +1,17 @@
-﻿using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
+﻿using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 
 namespace StockManagement.Application.Services.Abstract
 {
 	public interface ICustomerService
 	{
-		Task<GetCustomerByIdResponse> GetByIdAsync(int id);
-		Task<IEnumerable<GetAllCustomersResponse>> GetAllAsync();
-		Task AddAsync(CreateCustomerRequest request);
-		Task UpdateAsync(EditCustomerRequest request);
+		Task<GetCustomerByIdViewModel> GetByIdAsync(int id);
+		Task<IEnumerable<GetAllCustomersViewModel>> GetAllAsync();
+		Task AddAsync(CreateCustomerViewModel request);
+		Task UpdateAsync(EditCustomerViewModel request);
 		Task DeleteAsync(int id);
 		Task<bool> Exists(int id);
-		Task<PagedList<GetAllCustomersResponse>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString);
+		Task<PagedList<GetAllCustomersViewModel>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString);
 	}
 }

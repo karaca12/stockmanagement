@@ -1,6 +1,6 @@
-﻿using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
-using StockManagement.Application.Services.Abstract;
+﻿using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
@@ -18,8 +18,13 @@ namespace StockManagement.Application.Services.Concrete
 			_categoryService = categoryService;
 		}
 
-		public async Task AddAsync(CreateProductRequest request)
+		public async Task AddAsync(CreateProductViewModel request)
 		{
+			if (await _productRepository.ExistsByName(request.Name))
+			{
+				throw new InvalidOperationException("Product with the same name already exists.");
+			}
+
 			var product = new Product
 			{
 				Name = request.Name,
@@ -41,10 +46,10 @@ namespace StockManagement.Application.Services.Concrete
 			return await _productRepository.Exists(id);
 		}
 
-		public async Task<IEnumerable<GetAllProductsWithCategoryResponse>> GetAllWithCategoryAsync()
+		public async Task<IEnumerable<GetAllProductsWithCategoryViewModel>> GetAllWithCategoryAsync()
 		{
 			var products = await _productRepository.GetAllWithCategoryAsync();
-			var response = products.Select(p => new GetAllProductsWithCategoryResponse
+			var response = products.Select(p => new GetAllProductsWithCategoryViewModel
 			{
 				Id = p.Id,
 				Name = p.Name,
@@ -56,15 +61,15 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task<IEnumerable<GetAllCategoriesResponse>> GetAllCategoriesAsync()
+		public async Task<IEnumerable<GetAllCategoriesViewModel>> GetAllCategoriesAsync()
 		{
 			return await _categoryService.GetAllAsync();
 		}
 
-		public async Task<GetProductByIdWithCategoryResponse> GetByIdWithCategoryAsync(int id)
+		public async Task<GetProductByIdWithCategoryViewModel> GetByIdWithCategoryAsync(int id)
 		{
 			var product = await _productRepository.GetByIdWithCategoryAsync(id);
-			var response = new GetProductByIdWithCategoryResponse
+			var response = new GetProductByIdWithCategoryViewModel
 			{
 				Id = product.Id,
 				Name = product.Name,
@@ -77,9 +82,15 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task UpdateAsync(EditProductRequest request)
+		public async Task UpdateAsync(EditProductViewModel request)
 		{
 			var product = _productRepository.GetByIdWithCategoryAsync(request.Id).Result;
+
+			if (await _productRepository.ExistsByName(request.Name) && product.Name != request.Name)
+			{
+				throw new InvalidOperationException("Product with the same name already exists.");
+			}
+
 			product.Name = request.Name;
 			product.Brand = request.Brand;
 			product.CategoryId = request.CategoryId;
@@ -88,10 +99,10 @@ namespace StockManagement.Application.Services.Concrete
 			await _productRepository.UpdateAsync(product);
 		}
 
-		public async Task<IEnumerable<GetAllProductsResponse>> GetAllAsync()
+		public async Task<IEnumerable<GetAllProductsViewModel>> GetAllAsync()
 		{
 			var products = await _productRepository.GetAllAsync();
-			var response = products.Select(p => new GetAllProductsResponse
+			var response = products.Select(p => new GetAllProductsViewModel
 			{
 				Id = p.Id,
 				Name = p.Name,
@@ -102,7 +113,7 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task<PagedList<GetAllProductsWithCategoryResponse>> GetAllWithCategoryPagedAsync(int pageNumber, int pageSize, string searchString)
+		public async Task<PagedList<GetAllProductsWithCategoryViewModel>> GetAllWithCategoryPagedAsync(int pageNumber, int pageSize, string searchString)
 		{
 			var products = await _productRepository.GetAllWithCategoryAsync();
 			if (!string.IsNullOrEmpty(searchString))
@@ -112,7 +123,7 @@ namespace StockManagement.Application.Services.Concrete
 				|| p.Category.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 			}
 
-			var response = products.Select(p => new GetAllProductsWithCategoryResponse
+			var response = products.Select(p => new GetAllProductsWithCategoryViewModel
 			{
 				Id = p.Id,
 				Name = p.Name,
@@ -121,7 +132,7 @@ namespace StockManagement.Application.Services.Concrete
 				Price = p.Price,
 				Stock = p.Stock
 			}).ToList();
-			return PagedList<GetAllProductsWithCategoryResponse>.Create(response, pageNumber, pageSize);
+			return PagedList<GetAllProductsWithCategoryViewModel>.Create(response, pageNumber, pageSize);
 		}
 	}
 }

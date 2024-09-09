@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
 using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
@@ -31,12 +31,20 @@ namespace StockManagement.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create(CreateCategoryRequest request)
+		public async Task<IActionResult> Create(CreateCategoryViewModel request)
 		{
 			if (ModelState.IsValid)
 			{
-				await _categoryService.AddAsync(request);
-				return RedirectToAction(nameof(Index));
+				try
+				{
+					await _categoryService.AddAsync(request);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (InvalidOperationException ex)
+				{
+					ModelState.AddModelError(string.Empty, ex.Message);
+				}
+
 			}
 			return View();
 		}
@@ -45,15 +53,15 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			var category = await _categoryService.GetByIdAsync((int)id);
 			if (category == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
-			var editRequest = new EditCategoryRequest
+			var editRequest = new EditCategoryViewModel
 			{
 				Id = category.Id,
 				Name = category.Name
@@ -63,11 +71,11 @@ namespace StockManagement.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, EditCategoryRequest request)
+		public async Task<IActionResult> Edit(int id, EditCategoryViewModel request)
 		{
 			if (id != request.Id)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			if (ModelState.IsValid)
@@ -75,36 +83,40 @@ namespace StockManagement.Web.Controllers
 				try
 				{
 					await _categoryService.UpdateAsync(request);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (InvalidOperationException ex)
+				{
+					ModelState.AddModelError(string.Empty, ex.Message);
 				}
 				catch (DbUpdateConcurrencyException)
 				{
 					if (!await _categoryService.Exists(request.Id))
 					{
-						return NotFound();
+						return RedirectToAction("PageNotFound", "Error");
 					}
 					else
 					{
 						throw;
 					}
 				}
-				return RedirectToAction(nameof(Index));
 			}
-			return View(id);
+			return View();
 		}
 
 		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			var category = await _categoryService.GetByIdAsync((int)id);
 			if (category == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
-			var deleteResponse = new DeleteCategoryResponse
+			var deleteResponse = new DeleteCategoryViewModel
 			{
 				Id = category.Id,
 				Name = category.Name
@@ -119,7 +131,7 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			await _categoryService.DeleteAsync((int)id);

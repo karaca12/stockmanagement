@@ -1,6 +1,6 @@
-﻿using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
-using StockManagement.Application.Services.Abstract;
+﻿using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
@@ -16,8 +16,13 @@ namespace StockManagement.Application.Services.Concrete
 			_customerRepository = customerRepository;
 		}
 
-		public async Task AddAsync(CreateCustomerRequest request)
+		public async Task AddAsync(CreateCustomerViewModel request)
 		{
+			if (await _customerRepository.ExistsByNameAndSurname(request.Name, request.Surname))
+			{
+				throw new InvalidOperationException("Customer already exists.");
+			}
+
 			var customer = new Customer
 			{
 				Name = request.Name,
@@ -36,10 +41,10 @@ namespace StockManagement.Application.Services.Concrete
 			return await _customerRepository.Exists(id);
 		}
 
-		public async Task<IEnumerable<GetAllCustomersResponse>> GetAllAsync()
+		public async Task<IEnumerable<GetAllCustomersViewModel>> GetAllAsync()
 		{
 			var customers = await _customerRepository.GetAllAsync();
-			var response = customers.Select(c => new GetAllCustomersResponse
+			var response = customers.Select(c => new GetAllCustomersViewModel
 			{
 				Id = c.Id,
 				Name = c.Name,
@@ -48,7 +53,7 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task<PagedList<GetAllCustomersResponse>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString = null)
+		public async Task<PagedList<GetAllCustomersViewModel>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString = null)
 		{
 			var customers = await _customerRepository.GetAllAsync();
 			if (!string.IsNullOrEmpty(searchString))
@@ -57,19 +62,19 @@ namespace StockManagement.Application.Services.Concrete
 				|| c.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 			}
 
-			var response = customers.Select(c => new GetAllCustomersResponse
+			var response = customers.Select(c => new GetAllCustomersViewModel
 			{
 				Id = c.Id,
 				Name = c.Name,
 				Surname = c.Surname
 			}).ToList();
-			return PagedList<GetAllCustomersResponse>.Create(response, pageNumber, pageSize);
+			return PagedList<GetAllCustomersViewModel>.Create(response, pageNumber, pageSize);
 		}
 
-		public async Task<GetCustomerByIdResponse> GetByIdAsync(int id)
+		public async Task<GetCustomerByIdViewModel> GetByIdAsync(int id)
 		{
 			var customer = await _customerRepository.GetByIdAsync(id);
-			var response = new GetCustomerByIdResponse
+			var response = new GetCustomerByIdViewModel
 			{
 				Id = customer.Id,
 				Name = customer.Name,
@@ -78,9 +83,16 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task UpdateAsync(EditCustomerRequest request)
+		public async Task UpdateAsync(EditCustomerViewModel request)
 		{
 			var customer = _customerRepository.GetByIdAsync(request.Id).Result;
+
+			if (await _customerRepository.ExistsByNameAndSurname(request.Name, request.Surname)
+				&& (customer.Name != request.Name || customer.Surname != request.Surname))
+			{
+				throw new InvalidOperationException("Customer already exists.");
+			}
+
 			customer.Name = request.Name;
 			customer.Surname = request.Surname;
 			await _customerRepository.UpdateAsync(customer);

@@ -5,5 +5,6 @@ namespace StockManagement.Domain.Repositories
 {
 	public interface ICustomerRepository : IBaseRepositoryAsync<Customer>
 	{
+		Task<bool> ExistsByNameAndSurname(string name, string surname);
 	}
 }

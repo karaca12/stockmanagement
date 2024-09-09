@@ -1,6 +1,6 @@
-﻿namespace StockManagement.Application.DTOs.Responses
+﻿namespace StockManagement.Application.ViewModels.Responses
 {
-	public class GetAllCustomersResponse
+	public class GetAllCustomersViewModel
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }

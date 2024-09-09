@@ -1,20 +1,20 @@
-﻿using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
+﻿using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 
 namespace StockManagement.Application.Services.Abstract
 {
 	public interface IOrderService
 	{
-		Task<GetOrderByIdWithCustomerAndProductResponse> GetByIdWithCustomerAndProductAsync(int id);
-		Task<IEnumerable<GetAllOrdersWithCustomerAndProductResponse>> GetAllWithCustomerAndProductAsync();
-		Task AddAsync(CreateOrderRequest request);
-		Task UpdateAsync(EditOrderRequest request);
+		Task<GetOrderByIdWithCustomerAndProductViewModel> GetByIdWithCustomerAndProductAsync(int id);
+		Task<IEnumerable<GetAllOrdersWithCustomerAndProductViewModel>> GetAllWithCustomerAndProductAsync();
+		Task AddAsync(CreateOrderViewModel request);
+		Task UpdateAsync(EditOrderViewModel request);
 		Task DeleteAsync(int id);
-		Task<IEnumerable<GetAllCustomersResponse>> GetAllCustomersAsync();
-		Task<IEnumerable<GetAllProductsResponse>> GetAllProductsAsync();
+		Task<IEnumerable<GetAllCustomersViewModel>> GetAllCustomersAsync();
+		Task<IEnumerable<GetAllProductsViewModel>> GetAllProductsAsync();
 		Task<bool> Exists(int id);
-		Task<PagedList<GetAllOrdersWithCustomerAndProductResponse>> GetAllWithCustomerAndProductPagedAsync(int pageNumber, int pageSize, string searchString);
+		Task<PagedList<GetAllOrdersWithCustomerAndProductViewModel>> GetAllWithCustomerAndProductPagedAsync(int pageNumber, int pageSize, string searchString);
 
 	}
 }

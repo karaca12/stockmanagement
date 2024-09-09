@@ -5,5 +5,6 @@ namespace StockManagement.Domain.Repositories
 {
 	public interface ICategoryRepository : IBaseRepositoryAsync<Category>
 	{
+		Task<bool> ExistsByName(string name);
 	}
 }

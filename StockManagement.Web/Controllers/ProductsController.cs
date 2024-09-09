@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
 using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
@@ -31,12 +31,20 @@ namespace StockManagement.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create(CreateProductRequest request)
+		public async Task<IActionResult> Create(CreateProductViewModel request)
 		{
 			if (ModelState.IsValid)
 			{
-				await _productService.AddAsync(request);
-				return RedirectToAction(nameof(Index));
+				try
+				{
+					await _productService.AddAsync(request);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (InvalidOperationException ex)
+				{
+					ModelState.AddModelError(string.Empty, ex.Message);
+					ViewData["CategoryId"] = new SelectList(_productService.GetAllCategoriesAsync().Result, "Id", "Name");
+				}
 			}
 			return View();
 		}
@@ -45,15 +53,15 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			var product = await _productService.GetByIdWithCategoryAsync((int)id);
 			if (product == null)
 			{
-				return NotFound();
+				RedirectToAction("PageNotFound", "Error");
 			}
-			var editRequest = new EditProductRequest
+			var editRequest = new EditProductViewModel
 			{
 				Id = product.Id,
 				Name = product.Name,
@@ -68,11 +76,11 @@ namespace StockManagement.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, EditProductRequest request)
+		public async Task<IActionResult> Edit(int id, EditProductViewModel request)
 		{
 			if (id != request.Id)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			if (ModelState.IsValid)
@@ -80,36 +88,41 @@ namespace StockManagement.Web.Controllers
 				try
 				{
 					await _productService.UpdateAsync(request);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (InvalidOperationException ex)
+				{
+					ModelState.AddModelError(string.Empty, ex.Message);
+					ViewData["CategoryId"] = new SelectList(_productService.GetAllCategoriesAsync().Result, "Id", "Name");
 				}
 				catch (DbUpdateConcurrencyException)
 				{
 					if (!await _productService.Exists(request.Id))
 					{
-						return NotFound();
+						return RedirectToAction("PageNotFound", "Error");
 					}
 					else
 					{
 						throw;
 					}
 				}
-				return RedirectToAction(nameof(Index));
 			}
-			return View(id);
+			return View();
 		}
 
 		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			var product = await _productService.GetByIdWithCategoryAsync((int)id);
 			if (product == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
-			var deleteResponse = new DeleteProductResponse
+			var deleteResponse = new DeleteProductViewModel
 			{
 				Id = product.Id,
 				Name = product.Name,
@@ -127,7 +140,7 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			await _productService.DeleteAsync((int)id);

@@ -1,6 +1,6 @@
-﻿namespace StockManagement.Application.DTOs.Responses
+﻿namespace StockManagement.Application.ViewModels.Responses
 {
-	public class GetProductByIdWithCategoryResponse
+	public class GetProductByIdWithCategoryViewModel
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }

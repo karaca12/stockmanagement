@@ -7,5 +7,6 @@ namespace StockManagement.Domain.Repositories
 	{
 		public Task<IEnumerable<Product>> GetAllWithCategoryAsync();
 		public Task<Product> GetByIdWithCategoryAsync(int id);
+		public Task<bool> ExistsByName(string name);
 	}
 }

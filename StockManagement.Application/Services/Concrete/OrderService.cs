@@ -1,6 +1,6 @@
-﻿using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
-using StockManagement.Application.Services.Abstract;
+﻿using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
@@ -20,7 +20,7 @@ namespace StockManagement.Application.Services.Concrete
 			_customerService = customerService;
 		}
 
-		public async Task AddAsync(CreateOrderRequest request)
+		public async Task AddAsync(CreateOrderViewModel request)
 		{
 			var order = new Order
 			{
@@ -42,20 +42,20 @@ namespace StockManagement.Application.Services.Concrete
 			return await _orderRepository.Exists(id);
 		}
 
-		public async Task<IEnumerable<GetAllCustomersResponse>> GetAllCustomersAsync()
+		public async Task<IEnumerable<GetAllCustomersViewModel>> GetAllCustomersAsync()
 		{
 			return await _customerService.GetAllAsync();
 		}
 
-		public async Task<IEnumerable<GetAllProductsResponse>> GetAllProductsAsync()
+		public async Task<IEnumerable<GetAllProductsViewModel>> GetAllProductsAsync()
 		{
 			return await _productService.GetAllAsync();
 		}
 
-		public async Task<IEnumerable<GetAllOrdersWithCustomerAndProductResponse>> GetAllWithCustomerAndProductAsync()
+		public async Task<IEnumerable<GetAllOrdersWithCustomerAndProductViewModel>> GetAllWithCustomerAndProductAsync()
 		{
 			var orders = await _orderRepository.GetAllWithCustomerAndProductAsync();
-			var response = orders.Select(o => new GetAllOrdersWithCustomerAndProductResponse
+			var response = orders.Select(o => new GetAllOrdersWithCustomerAndProductViewModel
 			{
 				Id = o.Id,
 				Product = o.Product.Name,
@@ -66,7 +66,7 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task<PagedList<GetAllOrdersWithCustomerAndProductResponse>> GetAllWithCustomerAndProductPagedAsync(int pageNumber, int pageSize, string searchString)
+		public async Task<PagedList<GetAllOrdersWithCustomerAndProductViewModel>> GetAllWithCustomerAndProductPagedAsync(int pageNumber, int pageSize, string searchString)
 		{
 			var orders = await _orderRepository.GetAllWithCustomerAndProductAsync();
 			if (!string.IsNullOrEmpty(searchString))
@@ -76,7 +76,7 @@ namespace StockManagement.Application.Services.Concrete
 				|| o.Customer.Surname.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 			}
 
-			var response = orders.Select(o => new GetAllOrdersWithCustomerAndProductResponse
+			var response = orders.Select(o => new GetAllOrdersWithCustomerAndProductViewModel
 			{
 				Id = o.Id,
 				Product = o.Product.Name,
@@ -84,13 +84,13 @@ namespace StockManagement.Application.Services.Concrete
 				Pieces = o.Pieces,
 				Price = o.Price
 			}).ToList();
-			return PagedList<GetAllOrdersWithCustomerAndProductResponse>.Create(response, pageNumber, pageSize);
+			return PagedList<GetAllOrdersWithCustomerAndProductViewModel>.Create(response, pageNumber, pageSize);
 		}
 
-		public async Task<GetOrderByIdWithCustomerAndProductResponse> GetByIdWithCustomerAndProductAsync(int id)
+		public async Task<GetOrderByIdWithCustomerAndProductViewModel> GetByIdWithCustomerAndProductAsync(int id)
 		{
 			var order = await _orderRepository.GetByIdWithCustomerAndProductAsync(id);
-			var response = new GetOrderByIdWithCustomerAndProductResponse
+			var response = new GetOrderByIdWithCustomerAndProductViewModel
 			{
 				Id = order.Id,
 				ProductName = order.Product.Name,
@@ -101,7 +101,7 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task UpdateAsync(EditOrderRequest request)
+		public async Task UpdateAsync(EditOrderViewModel request)
 		{
 			var order = _orderRepository.GetByIdWithCustomerAndProductAsync(request.Id).Result;
 			order.ProductId = request.ProductId;

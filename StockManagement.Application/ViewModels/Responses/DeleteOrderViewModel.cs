@@ -1,6 +1,6 @@
-﻿namespace StockManagement.Application.DTOs.Responses
+﻿namespace StockManagement.Application.ViewModels.Responses
 {
-	public class DeleteOrderResponse
+	public class DeleteOrderViewModel
 	{
 		public int Id { get; set; }
 		public string Product { get; set; }

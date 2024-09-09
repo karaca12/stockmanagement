@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
 using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 
 namespace StockManagement.Web.Controllers
 {
@@ -23,7 +23,6 @@ namespace StockManagement.Web.Controllers
 			return View(pagedOrders);
 		}
 
-		// GET: Orders/Create
 		public IActionResult Create()
 		{
 			ViewData["CustomerId"] = new SelectList(_orderService.GetAllCustomersAsync().Result, "Id", "Name");
@@ -33,12 +32,19 @@ namespace StockManagement.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create(CreateOrderRequest request)
+		public async Task<IActionResult> Create(CreateOrderViewModel request)
 		{
 			if (ModelState.IsValid)
 			{
-				await _orderService.AddAsync(request);
-				return RedirectToAction(nameof(Index));
+				try
+				{
+					await _orderService.AddAsync(request);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (InvalidOperationException ex)
+				{
+					ModelState.AddModelError(string.Empty, ex.Message);
+				}
 			}
 			return View();
 		}
@@ -47,15 +53,15 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			var order = await _orderService.GetByIdWithCustomerAndProductAsync((int)id);
 			if (order == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
-			var editRequest = new EditOrderRequest
+			var editRequest = new EditOrderViewModel
 			{
 				Id = order.Id,
 				ProductId = order.ProductId,
@@ -71,11 +77,11 @@ namespace StockManagement.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, EditOrderRequest request)
+		public async Task<IActionResult> Edit(int id, EditOrderViewModel request)
 		{
 			if (id != request.Id)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			if (ModelState.IsValid)
@@ -88,7 +94,7 @@ namespace StockManagement.Web.Controllers
 				{
 					if (!await _orderService.Exists(request.Id))
 					{
-						return NotFound();
+						return RedirectToAction("PageNotFound", "Error");
 					}
 					else
 					{
@@ -104,15 +110,15 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			var order = await _orderService.GetByIdWithCustomerAndProductAsync((int)id);
 			if (order == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
-			var deleteResponse = new DeleteOrderResponse
+			var deleteResponse = new DeleteOrderViewModel
 			{
 				Id = order.Id,
 				Product = order.ProductName,
@@ -130,7 +136,7 @@ namespace StockManagement.Web.Controllers
 		{
 			if (id == null)
 			{
-				return NotFound();
+				return RedirectToAction("PageNotFound", "Error");
 			}
 
 			await _orderService.DeleteAsync((int)id);

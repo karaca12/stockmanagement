@@ -1,6 +1,6 @@
-﻿using StockManagement.Application.DTOs.Requests;
-using StockManagement.Application.DTOs.Responses;
-using StockManagement.Application.Services.Abstract;
+﻿using StockManagement.Application.Services.Abstract;
+using StockManagement.Application.ViewModels.Requests;
+using StockManagement.Application.ViewModels.Responses;
 using StockManagement.Domain.Core.Paging;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Repositories;
@@ -16,8 +16,13 @@ namespace StockManagement.Application.Services.Concrete
 			_categoryRepository = categoryRepository;
 		}
 
-		public async Task AddAsync(CreateCategoryRequest request)
+		public async Task AddAsync(CreateCategoryViewModel request)
 		{
+			if (await _categoryRepository.ExistsByName(request.Name))
+			{
+				throw new InvalidOperationException("Category with the same name already exists.");
+			}
+
 			var category = new Category
 			{
 				Name = request.Name
@@ -35,10 +40,10 @@ namespace StockManagement.Application.Services.Concrete
 			return await _categoryRepository.Exists(id);
 		}
 
-		public async Task<IEnumerable<GetAllCategoriesResponse>> GetAllAsync()
+		public async Task<IEnumerable<GetAllCategoriesViewModel>> GetAllAsync()
 		{
 			var categories = await _categoryRepository.GetAllAsync();
-			var response = categories.Select(c => new GetAllCategoriesResponse
+			var response = categories.Select(c => new GetAllCategoriesViewModel
 			{
 				Id = c.Id,
 				Name = c.Name
@@ -46,7 +51,7 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task<PagedList<GetAllCategoriesResponse>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString = null)
+		public async Task<PagedList<GetAllCategoriesViewModel>> GetAllPagedAsync(int pageNumber, int pageSize, string searchString = null)
 		{
 			var categories = await _categoryRepository.GetAllAsync();
 			if (!string.IsNullOrEmpty(searchString))
@@ -54,18 +59,18 @@ namespace StockManagement.Application.Services.Concrete
 				categories = categories.Where(c => c.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 			}
 
-			var response = categories.Select(c => new GetAllCategoriesResponse
+			var response = categories.Select(c => new GetAllCategoriesViewModel
 			{
 				Id = c.Id,
 				Name = c.Name
 			}).ToList();
-			return PagedList<GetAllCategoriesResponse>.Create(response, pageNumber, pageSize);
+			return PagedList<GetAllCategoriesViewModel>.Create(response, pageNumber, pageSize);
 		}
 
-		public async Task<GetCategoryByIdResponse> GetByIdAsync(int id)
+		public async Task<GetCategoryByIdViewModel> GetByIdAsync(int id)
 		{
 			var category = await _categoryRepository.GetByIdAsync(id);
-			var response = new GetCategoryByIdResponse
+			var response = new GetCategoryByIdViewModel
 			{
 				Id = category.Id,
 				Name = category.Name
@@ -73,9 +78,15 @@ namespace StockManagement.Application.Services.Concrete
 			return response;
 		}
 
-		public async Task UpdateAsync(EditCategoryRequest request)
+		public async Task UpdateAsync(EditCategoryViewModel request)
 		{
 			var category = _categoryRepository.GetByIdAsync(request.Id).Result;
+
+			if (await _categoryRepository.ExistsByName(request.Name) && category.Name != request.Name)
+			{
+				throw new InvalidOperationException("Category with the same name already exists.");
+			}
+
 			category.Name = request.Name;
 			await _categoryRepository.UpdateAsync(category);
 		}

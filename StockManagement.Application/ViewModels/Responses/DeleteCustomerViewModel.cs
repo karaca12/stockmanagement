@@ -1,6 +1,6 @@
-﻿namespace StockManagement.Application.DTOs.Requests
+﻿namespace StockManagement.Application.ViewModels.Responses
 {
-	public class EditCustomerRequest
+	public class DeleteCustomerViewModel
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
