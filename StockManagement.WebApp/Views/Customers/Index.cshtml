@@ -3,115 +3,51 @@
 @model PagedList<GetAllCustomersViewModel>
 
 @{
-    ViewData["Title"] = "Index";
-    var pageSizes = new List<int> { 10, 20, 50 };
-    var pageSize = Model.PageSize;
-    var currentPage = Model.PageNumber;
-    var totalPages = Model.TotalPages;
-    var searchString = ViewData["CurrentFilter"];
+	ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
 
-<form asp-action="Index" method="get">
-    <input type="text" name="searchString" value="@searchString" placeholder="Search by Name or Surname" />
-    <select name="pageSize" onchange="this.form.submit()">
-        @foreach (var size in pageSizes)
-        {
-            if (size == pageSize)
-            {
-                <option value="@size" selected="selected">@size</option>
-            }
-            else
-            {
-                <option value="@size">@size</option>
-            }
-        }
-
-    </select>
-    <input type="submit" value="Search" class="btn btn-primary" />
-</form>
+@await Html.PartialAsync("_SearchAndPageSize", Model)
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                Id
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                Surname
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Items)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Surname)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
+	<thead>
+		<tr>
+			<th>
+				Id
+			</th>
+			<th>
+				Name
+			</th>
+			<th>
+				Surname
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model.Items)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Surname)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+					<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
 </table>
 
-<div class="pagination-container">
-    <a asp-action="Index" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="prev-btn @(Model.HasPreviousPage ? "" : "disabled")">
-        Previous
-    </a>
-
-    <div class="page-numbers">
-        @if (totalPages > 1)
-        {
-            <a asp-action="Index" asp-route-pageNumber="1" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="@(currentPage == 1 ? "active" : "")">1</a>
-
-            @if (currentPage > 4)
-            {
-                <span>...</span>
-            }
-
-            @for (var i = Math.Max(2, currentPage - 2); i < currentPage; i++)
-            {
-                <a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString">@i</a>
-            }
-
-            @if (currentPage > 1 && currentPage < totalPages)
-            {
-                <a asp-action="Index" asp-route-pageNumber="@currentPage" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="active">@currentPage</a>
-            }
-
-            @for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
-            {
-                <a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString">@i</a>
-            }
-
-            @if (currentPage < totalPages - 3)
-            {
-                <span>...</span>
-            }
-
-            <a asp-action="Index" asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
-        }
-    </div>
-
-    <a asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="next-btn @(Model.HasNextPage ? "" : "disabled")">
-        Next
-    </a>
-</div>
+@await Html.PartialAsync("_Pagination", Model)
