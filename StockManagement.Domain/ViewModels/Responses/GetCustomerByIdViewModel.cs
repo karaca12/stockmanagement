@@ -1,9 +1,8 @@
-﻿namespace StockManagement.Domain.ViewModels.Responses
+﻿namespace StockManagement.Domain.ViewModels.Responses;
+
+public class GetCustomerByIdViewModel
 {
-	public class GetCustomerByIdViewModel
-	{
-		public int Id { get; set; }
-		public string Name { get; set; }
-		public string Surname { get; set; }
-	}
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Surname { get; set; }
 }

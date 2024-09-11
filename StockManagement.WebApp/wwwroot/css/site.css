@@ -34,10 +34,10 @@ body {
     text-decoration: none;
 }
 
-    .prev-btn.disabled, .next-btn.disabled {
-        opacity: 0.5;
-        pointer-events: none;
-    }
+.prev-btn.disabled, .next-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
 
 .page-numbers {
     display: flex;
@@ -45,19 +45,19 @@ body {
     flex-grow: 1;
 }
 
-    .page-numbers a, .page-numbers span {
-        margin: 0 5px;
-        text-decoration: none;
-        padding: 5px 10px;
-    }
+.page-numbers a, .page-numbers span {
+    margin: 0 5px;
+    text-decoration: none;
+    padding: 5px 10px;
+}
 
-        .page-numbers a.active {
-            font-weight: bold;
-            color: #fff;
-            background-color: #007bff;
-        }
+.page-numbers a.active {
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+}
 
-    .page-numbers span {
-        padding: 5px 10px;
-        color: #333;
-    }
+.page-numbers span {
+    padding: 5px 10px;
+    color: #333;
+}

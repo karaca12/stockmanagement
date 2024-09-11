@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StockManagement.Domain.ViewModels.Requests
+namespace StockManagement.Domain.ViewModels.Requests;
+
+public class EditCategoryViewModel
 {
-	public class EditCategoryViewModel
-	{
-		[Required]
-		public int Id { get; set; }
-		[Required]
-		public string Name { get; set; }
-	}
+    [Required] public int Id { get; set; }
+
+    [Required] public string Name { get; set; }
 }

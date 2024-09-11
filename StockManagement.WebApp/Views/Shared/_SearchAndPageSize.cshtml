@@ -1,27 +1,27 @@
 ﻿@model dynamic
 
 @{
-	ViewData["Title"] = "Index";
-	var pageSizes = new List<int> { 10, 20, 50 };
-	var pageSize = Model.PageSize;
-	var searchString = ViewData["CurrentFilter"];
+    ViewData["Title"] = "Index";
+    var pageSizes = new List<int> { 10, 20, 50 };
+    var pageSize = Model.PageSize;
+    var searchString = ViewData["CurrentFilter"];
 }
 
 <form asp-action="Index" method="get">
-	<input type="text" name="searchString" value="@searchString" placeholder="Search by Name or Surname" />
-	<select name="pageSize" onchange="this.form.submit()">
-		@foreach (var size in pageSizes)
-		{
-			if (size == pageSize)
-			{
-				<option value="@size" selected="selected">@size</option>
-			}
-			else
-			{
-				<option value="@size">@size</option>
-			}
-		}
+    <input type="text" name="searchString" value="@searchString" placeholder="Search by Name or Surname"/>
+    <select name="pageSize" onchange="this.form.submit()">
+        @foreach (var size in pageSizes)
+        {
+            if (size == pageSize)
+            {
+                <option value="@size" selected="selected">@size</option>
+            }
+            else
+            {
+                <option value="@size">@size</option>
+            }
+        }
 
-	</select>
-	<input type="submit" value="Search" class="btn btn-primary" />
+    </select>
+    <input type="submit" value="Search" class="btn btn-primary"/>
 </form>

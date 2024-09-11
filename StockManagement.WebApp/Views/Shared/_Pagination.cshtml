@@ -2,52 +2,52 @@
 
 
 @{
-	var pageSize = Model.PageSize;
-	var currentPage = Model.PageNumber;
-	var totalPages = Model.TotalPages;
-	var searchString = ViewData["CurrentFilter"];
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+    var searchString = ViewData["CurrentFilter"];
 }
 
 <div class="pagination-container">
-	<a asp-action="Index" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="prev-btn @(Model.HasPreviousPage ? "" : "disabled")">
-		Previous
-	</a>
+    <a asp-action="Index" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="prev-btn @(Model.HasPreviousPage ? "" : "disabled")">
+        Previous
+    </a>
 
-	<div class="page-numbers">
-		@if (totalPages > 1)
-		{
-			<a asp-action="Index" asp-route-pageNumber="1" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="@(currentPage == 1 ? "active" : "")">1</a>
+    <div class="page-numbers">
+        @if (totalPages > 1)
+        {
+            <a asp-action="Index" asp-route-pageNumber="1" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="@(currentPage == 1 ? "active" : "")">1</a>
 
-			@if (currentPage > 4)
-			{
-				<span>...</span>
-			}
+            @if (currentPage > 4)
+            {
+                <span>...</span>
+            }
 
-			@for (var i = Math.Max(2, currentPage - 2); i < currentPage; i++)
-			{
-				<a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString">@i</a>
-			}
+            @for (var i = Math.Max(2, currentPage - 2); i < currentPage; i++)
+            {
+                <a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString">@i</a>
+            }
 
-			@if (currentPage > 1 && currentPage < totalPages)
-			{
-				<a asp-action="Index" asp-route-pageNumber="@currentPage" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="active">@currentPage</a>
-			}
+            @if (currentPage > 1 && currentPage < totalPages)
+            {
+                <a asp-action="Index" asp-route-pageNumber="@currentPage" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="active">@currentPage</a>
+            }
 
-			@for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
-			{
-				<a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString">@i</a>
-			}
+            @for (var i = currentPage + 1; i <= Math.Min(currentPage + 2, totalPages - 1); i++)
+            {
+                <a asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString">@i</a>
+            }
 
-			@if (currentPage < totalPages - 3)
-			{
-				<span>...</span>
-			}
+            @if (currentPage < totalPages - 3)
+            {
+                <span>...</span>
+            }
 
-			<a asp-action="Index" asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
-		}
-	</div>
+            <a asp-action="Index" asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="@(currentPage == totalPages ? "active" : "")">@totalPages</a>
+        }
+    </div>
 
-	<a asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="next-btn @(Model.HasNextPage ? "" : "disabled")">
-		Next
-	</a>
+    <a asp-action="Index" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" asp-route-searchString="@searchString" class="next-btn @(Model.HasNextPage ? "" : "disabled")">
+        Next
+    </a>
 </div>

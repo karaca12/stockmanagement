@@ -5,138 +5,113 @@ using StockManagement.Application.Services.Abstract;
 using StockManagement.Domain.ViewModels.Requests;
 using StockManagement.Domain.ViewModels.Responses;
 
-namespace StockManagement.Web.Controllers
+namespace StockManagement.Web.Controllers;
+
+[Authorize]
+public class CustomersController : Controller
 {
-	[Authorize]
-	public class CustomersController : Controller
-	{
-		private readonly ICustomerService _customerService;
+    private readonly ICustomerService _customerService;
 
-		public CustomersController(ICustomerService customerService)
-		{
-			_customerService = customerService;
-		}
+    public CustomersController(ICustomerService customerService)
+    {
+        _customerService = customerService;
+    }
 
-		public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
-		{
-			var pagedCustomers = await _customerService.GetAllPagedAsync(pageNumber, pageSize, searchString);
-			ViewData["CurrentFilter"] = searchString;
-			return View(pagedCustomers);
-		}
+    public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
+    {
+        var pagedCustomers = await _customerService.GetAllPagedAsync(pageNumber, pageSize, searchString);
+        ViewData["CurrentFilter"] = searchString;
+        return View(pagedCustomers);
+    }
 
-		public IActionResult Create()
-		{
-			return View();
-		}
+    public IActionResult Create()
+    {
+        return View();
+    }
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create(CreateCustomerViewModel request)
-		{
-			if (ModelState.IsValid)
-			{
-				try
-				{
-					await _customerService.AddAsync(request);
-					return RedirectToAction(nameof(Index));
-				}
-				catch (InvalidOperationException ex)
-				{
-					ModelState.AddModelError(string.Empty, ex.Message);
-				}
-			}
-			return View();
-		}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateCustomerViewModel request)
+    {
+        if (ModelState.IsValid)
+            try
+            {
+                await _customerService.AddAsync(request);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
-		public async Task<IActionResult> Edit(int? id)
-		{
-			if (id == null)
-			{
-				return RedirectToAction("PageNotFound", "Error");
-			}
+        return View();
+    }
 
-			var customer = await _customerService.GetByIdAsync((int)id);
-			if (customer == null)
-			{
-				return RedirectToAction("PageNotFound", "Error");
-			}
-			var editRequest = new EditCustomerViewModel
-			{
-				Id = customer.Id,
-				Name = customer.Name,
-				Surname = customer.Surname
-			};
-			return View(editRequest);
-		}
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null) return RedirectToAction("PageNotFound", "Error");
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, EditCustomerViewModel request)
-		{
-			if (id != request.Id)
-			{
-				return RedirectToAction("PageNotFound", "Error");
-			}
+        var customer = await _customerService.GetByIdAsync((int)id);
+        if (customer == null) return RedirectToAction("PageNotFound", "Error");
+        var editRequest = new EditCustomerViewModel
+        {
+            Id = customer.Id,
+            Name = customer.Name,
+            Surname = customer.Surname
+        };
+        return View(editRequest);
+    }
 
-			if (ModelState.IsValid)
-			{
-				try
-				{
-					await _customerService.UpdateAsync(request);
-					return RedirectToAction(nameof(Index));
-				}
-				catch (InvalidOperationException ex)
-				{
-					ModelState.AddModelError(string.Empty, ex.Message);
-				}
-				catch (DbUpdateConcurrencyException)
-				{
-					if (!await _customerService.Exists(request.Id))
-					{
-						return RedirectToAction("PageNotFound", "Error");
-					}
-					else
-					{
-						throw;
-					}
-				}
-			}
-			return View();
-		}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, EditCustomerViewModel request)
+    {
+        if (id != request.Id) return RedirectToAction("PageNotFound", "Error");
 
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null)
-			{
-				return RedirectToAction("PageNotFound", "Error");
-			}
+        if (ModelState.IsValid)
+            try
+            {
+                await _customerService.UpdateAsync(request);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _customerService.Exists(request.Id))
+                    return RedirectToAction("PageNotFound", "Error");
+                throw;
+            }
 
-			var customer = await _customerService.GetByIdAsync((int)id);
-			if (customer == null)
-			{
-				return RedirectToAction("PageNotFound", "Error");
-			}
-			var deletedResponse = new DeleteCustomerViewModel
-			{
-				Id = customer.Id,
-				Name = customer.Name,
-				Surname = customer.Surname
-			};
+        return View();
+    }
 
-			return View(deletedResponse);
-		}
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null) return RedirectToAction("PageNotFound", "Error");
 
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int? id)
-		{
-			if (id == null)
-			{
-				return RedirectToAction("PageNotFound", "Error");
-			}
+        var customer = await _customerService.GetByIdAsync((int)id);
+        if (customer == null) return RedirectToAction("PageNotFound", "Error");
+        var deletedResponse = new DeleteCustomerViewModel
+        {
+            Id = customer.Id,
+            Name = customer.Name,
+            Surname = customer.Surname
+        };
 
-			await _customerService.DeleteAsync((int)id);
-			return RedirectToAction(nameof(Index));
-		}
-	}
+        return View(deletedResponse);
+    }
+
+    [HttpPost]
+    [ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int? id)
+    {
+        if (id == null) return RedirectToAction("PageNotFound", "Error");
+
+        await _customerService.DeleteAsync((int)id);
+        return RedirectToAction(nameof(Index));
+    }
 }
